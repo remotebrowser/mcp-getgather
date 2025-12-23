@@ -453,11 +453,18 @@ class Element:
     async def inner_text(self) -> str:
         return self.element.text
 
-    async def click(self) -> None:
-        if self.css_selector:
-            await self.css_click()
+    async def click(self, use_cdp: bool = True) -> None:
+        """Click element. Use CDP mouse events by default to trigger event listeners."""
+        logger.info(
+            f"Clicking element {self.css_selector} or {self.xpath_selector} with use_cdp: {use_cdp}"
+        )
+        if use_cdp:
+            await self.cdp_click()
         else:
-            await self.xpath_click()
+            if self.css_selector:
+                await self.css_click()
+            else:
+                await self.xpath_click()
         await asyncio.sleep(0.25)
 
     async def select_option(self, value: str) -> None:
@@ -571,6 +578,87 @@ class Element:
                 )
         except Exception as js_error:
             logger.error(f"JavaScript XPath click failed: {js_error}")
+
+    async def get_element_center(self) -> tuple[float, float] | None:
+        """Get center coordinates of element using JavaScript."""
+        if self.css_selector:
+            selector_type = "css"
+            selector = self.css_selector
+        else:
+            selector_type = "xpath"
+            selector = self.xpath_selector
+
+        if not selector:
+            logger.warning("Cannot get element center: no selector available")
+            return None
+
+        try:
+            escaped_selector = selector.replace("\\", "\\\\").replace('"', '\\"')
+            js_code = f"""
+            (() => {{
+                let element;
+                if ("{selector_type}" === "css") {{
+                    element = document.querySelector("{escaped_selector}");
+                }} else {{
+                    element = document.evaluate("{escaped_selector}", 
+                        document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+                }}
+                if (!element) return null;
+                const rect = element.getBoundingClientRect();
+                return {{
+                    x: rect.x + rect.width / 2,
+                    y: rect.y + rect.height / 2
+                }};
+            }})()
+            """
+            result = cast(dict[str, float] | None, await self.page.evaluate(js_code))
+            if result:
+                return (float(result["x"]), float(result["y"]))
+            return None
+        except Exception as e:
+            logger.warning(f"Failed to get element center: {e}")
+            return None
+
+    async def cdp_click(self) -> None:
+        """Click element using CDP mouse events (triggers real event listeners)."""
+        logger.info(f"Performing CDP click for {self.css_selector} or {self.xpath_selector}")
+        center = await self.get_element_center()
+        if not center:
+            logger.warning("Cannot perform CDP click: could not get element position")
+            await self.css_click() if self.css_selector else await self.xpath_click()
+            return
+
+        x, y = center
+        logger.info(f"Performing CDP click at ({x}, {y})")
+
+        try:
+            await self.page.send(
+                zd.cdp.input_.dispatch_mouse_event(
+                    type_="mousePressed",
+                    x=x,
+                    y=y,
+                    button=zd.cdp.input_.MouseButton.LEFT,
+                    click_count=1,
+                )
+            )
+
+            await asyncio.sleep(random.uniform(0.05, 0.15))
+
+            await self.page.send(
+                zd.cdp.input_.dispatch_mouse_event(
+                    type_="mouseReleased",
+                    x=x,
+                    y=y,
+                    button=zd.cdp.input_.MouseButton.LEFT,
+                    click_count=1,
+                )
+            )
+
+            logger.info(f"CDP click succeeded at ({x}, {y})")
+        except Exception as e:
+            logger.error(f"CDP click failed: {e}")
+            logger.info("Falling back to JavaScript click")
+            await self.css_click() if self.css_selector else await self.xpath_click()
 
 
 async def page_query_selector(page: zd.Tab, selector: str, timeout: float = 0) -> Element | None:
