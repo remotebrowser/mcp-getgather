@@ -504,7 +504,7 @@ async def zen_post_dpage(page: zd.Tab, id: str, request: Request) -> HTMLRespons
         logger.debug(f"Iteration {iteration + 1} of {max}")
         await asyncio.sleep(TICK)
 
-        hostname: str | None = getattr(page, "hostname", None)  # type: ignore[assignment]
+        hostname = str(urllib.parse.urlparse(page.url).hostname) if page.url else None
 
         match = await zen_distill(hostname, page, patterns)
         if not match:
