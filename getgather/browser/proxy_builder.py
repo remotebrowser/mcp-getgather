@@ -72,7 +72,8 @@ def build_proxy_config(
         # Build from template (may not need base_username)
         params = _build_params(proxy_config.username_template, values)
         if params:
-            username = params
+            prefix = proxy_config.username_template.split("-", 1)[0]
+            username = f"{prefix}-{params}"
     elif proxy_config.base_username:
         # Use base username if no template
         username = proxy_config.base_username
