@@ -51,7 +51,7 @@
 
     <button
       type="submit"
-      gg-match="body:not(:has(.adc-loading)) div[class*='_verify_'] adc-button:has-text('Verify')"
+      gg-match="body:not(:has(.adc-loading)) //div[contains(@class, '_verify_')]//adc-button[contains(., 'Verify')]"
     >
       Verify
     </button>

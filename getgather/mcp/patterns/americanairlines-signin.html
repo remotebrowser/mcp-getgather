@@ -6,7 +6,7 @@
     <div
       gg-optional
       gg-autoclick
-      gg-match="button.ot-pc-refuse-all-handler:has-text('Reject All')"
+      gg-match="//button[contains(@class, 'ot-pc-refuse-all-handler') and contains(., 'Reject All')]"
     ></div>
     <p gg-optional gg-match="adc-inline-notification[role='alert'][kind='error']"></p>
     <input
