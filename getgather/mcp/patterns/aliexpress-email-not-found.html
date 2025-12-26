@@ -3,10 +3,10 @@
     <title>Aliexpress Email Not Found</title>
   </head>
   <body>
-    <h2 gg-match="button > span:has-text('Register')"></h2>
+    <h2 gg-match="//button/span[contains(text(), 'Register')]"></h2>
     <p>You do not have an account with this email, please try again with a different email.</p>
     <input name="none" style="display: none" />
-    <button type="submit" name="button" value="back" gg-match="button:has-text('Back')">
+    <button type="submit" name="button" value="back" gg-match="//button[contains(text(), 'Back')]">
       Back
     </button>
   </body>

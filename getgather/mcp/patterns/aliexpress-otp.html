@@ -3,7 +3,7 @@
     <title>Verification</title>
   </head>
   <body>
-    <span gg-match="div:has-text('Email verification code')"></span>
+    <span gg-match="//div[contains(text(), 'Email verification code')]"></span>
     <span gg-match="div.subTitle_field_item"></span>
     <input name="otp" type="tel" gg-match="input[data-id='0']" placeholder="OTP" />
     <button type="submit" gg-match="button#j-test">Verify</button>
