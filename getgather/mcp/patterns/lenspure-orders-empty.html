@@ -1,5 +1,8 @@
 <html gg-domain="lenspure" gg-priority="1">
   <body>
-    <div gg-stop gg-match-html="div[id='content'] div:has-text('You have no order history')"></div>
+    <div
+      gg-stop
+      gg-match-html="//div[@id='content']//div[contains(., 'You have no order history')]"
+    ></div>
   </body>
 </html>
