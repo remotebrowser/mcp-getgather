@@ -2,7 +2,6 @@ import asyncio
 import os
 import random
 import re
-import shutil
 import urllib.parse
 from datetime import datetime
 from pathlib import Path
@@ -31,7 +30,7 @@ from getgather.distill import (
     terminate,
 )
 from getgather.logs import logger
-from getgather.mcp.browser import browser_manager
+from getgather.mcp.browser import browser_manager, terminate_zendriver_browser
 
 
 def _safe_fragment(value: str) -> str:
@@ -258,35 +257,6 @@ async def init_zendriver_browser(id: str | None = None) -> zd.Browser:
 
     logger.error(f"Failed to get a working browser after {MAX_ATTEMPTS} attempts!")
     raise RuntimeError(f"Failed to get a working Zendriver browser after {MAX_ATTEMPTS} attempts!")
-
-
-async def terminate_zendriver_browser(browser: zd.Browser):
-    await browser.stop()
-    browser_id = cast(str, browser.id)  # type: ignore[attr-defined]
-    user_data_dir = settings.profiles_dir / browser_id
-    logger.info(
-        f"Terminating Zendriver browser with user_data_dir: {user_data_dir}",
-        extra={"profile_id": browser_id},
-    )
-    for directory in [
-        "Default/DawnGraphiteCache",
-        "Default/DawnWebGPUCache",
-        "Default/GPUCache",
-        "Default/Code Cache",
-        "Default/Cache",
-        "GraphiteDawnCache",
-        "GrShaderCache",
-        "ShaderCache",
-        "Subresource Filter",
-        "segmentation_platform",
-    ]:
-        path = user_data_dir / directory
-
-        if path.exists():
-            try:
-                shutil.rmtree(path)
-            except Exception as e:
-                logger.warning(f"Failed to remove {directory}: {e}")
 
 
 async def zen_navigate_with_retry(page: zd.Tab, url: str) -> zd.Tab:

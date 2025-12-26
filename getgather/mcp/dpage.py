@@ -29,7 +29,7 @@ from getgather.distill import (
     terminate,
 )
 from getgather.logs import logger
-from getgather.mcp.browser import browser_manager
+from getgather.mcp.browser import browser_manager, terminate_zendriver_browser
 from getgather.mcp.html_renderer import DEFAULT_TITLE, render_form
 from getgather.zen_distill import (
     autoclick as zen_autoclick,
@@ -39,7 +39,6 @@ from getgather.zen_distill import (
     init_zendriver_browser,
     page_query_selector,
     run_distillation_loop as zen_run_distillation_loop,
-    terminate_zendriver_browser,
     zen_navigate_with_retry,
     zen_report_distill_error,
 )
@@ -477,6 +476,7 @@ async def dpage_mcp_tool(initial_url: str, result_key: str, timeout: int = 2) ->
 
 
 async def zen_post_dpage(page: zd.Tab, id: str, request: Request) -> HTMLResponse:
+    browser_manager.update_last_active(id)
     form_data = await request.form()
     fields: dict[str, str] = {k: str(v) for k, v in form_data.items()}
 

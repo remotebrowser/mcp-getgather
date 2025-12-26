@@ -24,6 +24,7 @@ from getgather.browser.session import BrowserSession
 from getgather.browser.session_cleanup import cleanup_old_sessions
 from getgather.config import settings
 from getgather.logs import logger
+from getgather.mcp.browser import browser_manager
 from getgather.mcp.dpage import router as dpage_router
 from getgather.mcp.main import create_mcp_apps
 from getgather.startup import startup
@@ -46,6 +47,7 @@ async def lifespan(app: FastAPI):
     async def timer_loop():
         while not stop_event.is_set():
             await cleanup_old_sessions()
+            await browser_manager.cleanup_incognito_browsers()
             try:
                 await asyncio.wait_for(stop_event.wait(), timeout=5 * 60)
             except asyncio.TimeoutError:
