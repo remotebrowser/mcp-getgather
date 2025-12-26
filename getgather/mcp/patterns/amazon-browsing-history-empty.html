@@ -1,0 +1,16 @@
+<html gg-domain="amazon" gg-priority="6">
+  <head>
+    <title>Amazon Browsing History Empty</title>
+  </head>
+  <body>
+    <span
+      gg-stop
+      gg-error="browsing_history_empty"
+      gg-stop-html="//span[contains(., 'You have no recently viewed items.')]"
+    ></span>
+    <span
+      gg-match="//p[contains(., 'These items were viewed recently. We use them to personalize recommendations.')]"
+    ></span>
+    <div gg-match="a[data-nav-ref='nav_youraccount_btn']"></div>
+  </body>
+</html>

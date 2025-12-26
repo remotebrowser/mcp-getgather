@@ -1,0 +1,17 @@
+<html gg-domain="amazon">
+  <head>
+    <title>Amazon Sign In - Email</title>
+  </head>
+  <body>
+    <span gg-optional gg-match="div#invalid-email-alert div.a-alert-content"></span>
+
+    <input
+      autofocus
+      name="email"
+      type="email"
+      placeholder="Email or mobile phone number"
+      gg-match="input#ap_email_login"
+    />
+    <button type="submit" gg-match="span#continue input[type=submit]">Continue</button>
+  </body>
+</html>
