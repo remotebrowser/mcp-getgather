@@ -1,0 +1,23 @@
+<!-- getgather/mcp/patterns/alfagift-login.html -->
+<html gg-domain="alfagift">
+  <head>
+    <title>Alfagift Sign In</title>
+  </head>
+  <body>
+    <input name="email" type="text" gg-match="input[id='email']" placeholder="Ketik user Anda" />
+    <input
+      name="password"
+      type="password"
+      gg-match="input[type='password']"
+      placeholder="Password"
+    />
+    <div gg-optional gg-match-html="div.alert.alert-danger"></div>
+    <div gg-optional gg-match="p.text-center.mb-4"></div>
+    <button
+      type="submit"
+      gg-match="//button[contains(normalize-space(.),'Masuk') or contains(normalize-space(.),'Log in')]"
+    >
+      Masuk
+    </button>
+  </body>
+</html>
